@@ -1,0 +1,6 @@
+Day 03 - Linux Survival Commands
+
+1. cp [file] [destination]  -> Copy a file
+2. mv [old] [new]           -> Move or Rename a file
+3. rm [file]                -> Delete a file (Permanent!)
+4. rm -r [folder]           -> Delete a folder
