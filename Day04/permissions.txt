@@ -1,0 +1,6 @@
+Day 04 - Linux Permissions
+
+1. chmod 600 [file]  -> Private (Only I can read/write)
+2. chmod 777 [file]  -> Public (Everyone can do anything - DANGEROUS)
+3. chmod 644 [file]  -> Standard (I write, others read)
+4. sudo chown user:user [file] -> Change who owns the file
