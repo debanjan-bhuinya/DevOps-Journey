@@ -1,0 +1,6 @@
+Day 05 - The App Store (APT)
+
+1. sudo apt update           -> Update the catalog (Do this first!)
+2. sudo apt install [name]   -> Install software (e.g., htop, git)
+3. sudo apt remove [name]    -> Uninstall software
+4. htop                      -> Check CPU/RAM usage
