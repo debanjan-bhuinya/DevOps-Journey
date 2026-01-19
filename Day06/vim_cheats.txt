@@ -1,0 +1,9 @@
+Day 06 - Vim Survival Guide
+
+1. vi [file]       -> Open Vim
+2. i               -> Insert Mode (Type text)
+3. Esc             -> Exit Insert Mode (Back to command)
+4. :wq             -> Save and Quit
+5. :q!             -> Quit WITHOUT Saving (Panic button)
+6. dd              -> Delete current line
+7. u               -> Undo
