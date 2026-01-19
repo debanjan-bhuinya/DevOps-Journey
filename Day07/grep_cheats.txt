@@ -1,0 +1,6 @@
+Day 07 - Grep (Search) Cheat Sheet
+
+1. grep "text" [file]      -> Find lines with "text"
+2. grep -i "text" [file]   -> Case insensitive (finds Text, TEXT, text)
+3. grep -n "text" [file]   -> Show Line Numbers
+4. grep -r "text" .        -> Search in ALL files in a folder (Recursive)

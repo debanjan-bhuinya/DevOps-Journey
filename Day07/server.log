@@ -1,0 +1,8 @@
+2026-01-20 10:00:00 [INFO] Server started
+2026-01-20 10:01:00 [INFO] User admin logged in
+2026-01-20 10:02:00 [WARN] High memory usage
+2026-01-20 10:03:00 [INFO] User guest logged in
+2026-01-20 10:04:00 [ERROR] Database connection failed!
+2026-01-20 10:05:00 [INFO] User admin logged out
+2026-01-20 10:06:00 [error] critical system failure
+2026-01-20 10:07:00 [INFO] Rebooting...
