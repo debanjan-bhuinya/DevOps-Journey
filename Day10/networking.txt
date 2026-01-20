@@ -1,0 +1,8 @@
+Day 10 - Networking Basics
+
+1. ping [site]       -> Check if a server is alive (Ctrl+C to stop)
+2. ip addr           -> Show my IP address
+3. curl [url]        -> Fetch a webpage's HTML code
+4. curl -O [url]     -> Download a file
+5. 127.0.0.1         -> Localhost (Me)
+
