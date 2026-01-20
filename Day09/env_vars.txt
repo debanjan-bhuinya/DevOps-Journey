@@ -1,0 +1,7 @@
+Day 09 - Environment Variables
+
+1. printenv           -> List all variables
+2. echo $VAR          -> Read a variable (e.g., echo $USER)
+3. export VAR="Val"   -> Set a temporary variable
+4. ~/.bashrc          -> File for permanent variables
+5. source ~/.bashrc   -> Reload settings immediately
