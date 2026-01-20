@@ -1,0 +1,7 @@
+Day 08 - Redirection & Pipes
+
+1. >   -> Save to file (Overwrites!)
+2. >>  -> Append to file (Adds to bottom)
+3. |   -> Pipe (Pass output to next command)
+4. tee -> Print to screen AND save to file
+5. wc -l -> Count lines
