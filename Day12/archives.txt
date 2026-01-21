@@ -1,0 +1,6 @@
+Day 12 - Archives & Compression
+
+1. tar -czvf name.tar.gz [files]  -> Create a compressed archive
+2. tar -xzvf name.tar.gz          -> Extract an archive
+3. zip name.zip [files]           -> Create a .zip (Windows friendly)
+4. unzip name.zip                 -> Extract a .zip
