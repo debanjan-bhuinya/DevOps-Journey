@@ -1,0 +1,8 @@
+Day 11 - Process Management
+
+1. command &       -> Run in background (e.g., sleep 1000 &)
+2. ps aux          -> List ALL processes
+3. grep            -> Find specific process (ps aux | grep name)
+4. kill [PID]      -> Stop a process safely
+5. kill -9 [PID]   -> Force kill (The Nuclear Option)
+
