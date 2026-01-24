@@ -1,0 +1,5 @@
+Day 14 - Scripting Level 2 (Loops & Logic)
+
+1. for i in 1 2 3; do ... done  -> Repeat commands
+2. if [ -f "file" ]; then ... fi -> Check if file exists
+3. mkdir -p [folder]             -> Create folder only if missing
