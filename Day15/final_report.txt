@@ -1,0 +1,13 @@
+Day 15 - Linux Phase Complete
+
+Project: Automated Web Server Deployment
+Status: Success
+
+Summary of Skills:
+- Command Line Navigation
+- File & Permission Management
+- Package Management (apt)
+- Vim Editing
+- Process & Network Management
+- Bash Scripting & Automation
+
