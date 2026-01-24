@@ -1,0 +1,6 @@
+Day 17 - Merging
+
+1. git checkout main        -> Go to the destination branch first
+2. git merge [branch_name]  -> Bring changes from [branch] into here
+3. git branch -d [branch]   -> Delete the branch after merging
+
