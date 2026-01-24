@@ -1,0 +1,8 @@
+Day 18 - Merge Conflicts
+
+1. Conflict happens when 2 branches edit the same line.
+2. git status -> Shows which files are fighting.
+3. Open file -> Look for <<<<<<< HEAD.
+4. Delete the markers and pick the correct code.
+5. git add [file] + git commit -> Finishes the fix.
+
