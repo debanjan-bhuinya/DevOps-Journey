@@ -1,0 +1,7 @@
+Day 13 - SSH (Secure Shell)
+
+1. sudo apt install openssh-server -> Get the server software
+2. sudo systemctl status ssh       -> Check if it's running
+3. ssh user@localhost              -> Log into yourself
+4. exit                            -> Logout
+5. ssh-keygen                      -> Create a security key pair
