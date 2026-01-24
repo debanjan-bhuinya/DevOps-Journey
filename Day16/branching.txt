@@ -1,0 +1,7 @@
+Day 16 - Git Branching
+
+1. git branch [name]      -> Create a new branch (timeline)
+2. git checkout [name]    -> Switch to a branch
+3. git checkout -b [name] -> Create AND Switch in one command
+4. git branch             -> List all branches
+
