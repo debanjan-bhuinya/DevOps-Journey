@@ -1,3 +1,6 @@
 #!/bin/bash
 
-echo "Hello, Pikachu! This is my first script."
+echo "What is your name?"
+read username
+
+echo "Hello $username! Welcome to the world of DevOps."
