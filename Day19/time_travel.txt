@@ -1,0 +1,5 @@
+Day 19 - Git Time Travel
+
+1. git log --oneline      -> See history (and Commit IDs)
+2. git revert [ID]        -> Safe Undo (Creates a new reverse commit)
+3. git reset --hard [ID]  -> Dangerous Undo (Erases history back to ID)
