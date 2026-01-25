@@ -1,0 +1,7 @@
+Day 20 - The Professional Git Workflow
+
+1. git checkout -b feature-branch  -> Work safely
+2. git push -u origin feature-branch -> Send to cloud
+3. GitHub UI -> Create Pull Request -> Merge
+4. git checkout main -> Go home
+5. git pull origin main -> Sync the changes back
