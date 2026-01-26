@@ -1,0 +1,6 @@
+Day 21 - Docker Basics
+
+1. docker run hello-world        -> Test installation
+2. docker run -d -p 8080:80 nginx -> Run a web server
+3. docker ps                     -> List running containers
+4. docker stop [id]              -> Stop a container
