@@ -1,0 +1,7 @@
+Day 23 - Docker Cleanup
+
+1. docker ps -a           -> List ALL containers (running + stopped)
+2. docker rm [id]         -> Delete a specific container
+3. docker container prune -> Delete ALL stopped containers
+4. docker rmi [image]     -> Delete an image (blueprint)
+5. docker system prune    -> Delete EVERYTHING (unused images, networks, cache)
