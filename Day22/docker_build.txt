@@ -1,0 +1,5 @@
+Day 22 - Building Docker Images
+
+1. Dockerfile       -> The recipe file (FROM, COPY, CMD)
+2. docker build -t [name] .   -> Build an image from the current folder
+3. docker images    -> List all images on your computer
