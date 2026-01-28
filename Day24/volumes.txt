@@ -1,0 +1,6 @@
+Day 24 - Docker Volumes
+
+1. Containers are temporary (Ephemeral). Data is lost on delete.
+2. docker volume create [name] -> Create a persistent storage box.
+3. docker run -v [vol_name]:[container_path] -> Mount the volume.
+4. Data stored in the volume survives even if the container is deleted.
