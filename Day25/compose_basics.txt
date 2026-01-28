@@ -1,0 +1,7 @@
+Day 25 - Docker Compose
+
+1. docker-compose.yml   -> The blueprint file (YAML format).
+2. docker compose up -d -> Start all services in the background.
+3. docker compose ps    -> Check status of this specific project.
+4. docker compose down  -> Stop and remove everything.
+
