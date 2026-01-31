@@ -1,4 +1,4 @@
-# Day 29: My First AWS Web Server
+## Day 29: My First AWS Web Server
 
 ## Steps I followed:
 1. Launched an EC2 Instance (Ubuntu 24.04, t3.micro).
