@@ -1,4 +1,4 @@
-# Day 28: Launching My First EC2 Instance 🚀
+## Day 28: Launching My First EC2 Instance 🚀
 
 ## Instance Configuration
 - **Name**: My-First-Server
