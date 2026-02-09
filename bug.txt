@@ -1,3 +1,0 @@
-This is a bad file.
-It contains a virus.
-DO NOT DEPLOY.
