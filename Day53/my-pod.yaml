@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-k8s-site
+  labels:
+    app: website
+spec:
+  containers:
+  - name: my-container
+    image: pikachu003/my-custom-nginx:v1
+    ports:
+    - containerPort: 8
