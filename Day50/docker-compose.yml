@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  my-website:
+    image: pikachu003/my-custom-nginx:v1
+    ports:
+      - "9090:80"
+    volumes:
+      - my-data-volume:/usr/share/nginx/html
+    container_name: compose-site
+
+volumes:
+  my-data-volume:
