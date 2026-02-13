@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: my-website-manager
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: website
+  template:
+    metadata:
+      labels:
+        app: website
+    spec:
+      containers:
+      - name: my-container
+        image: pikachu003/my-custom-nginx:v1
+        ports:
+        - containerPort: 80
