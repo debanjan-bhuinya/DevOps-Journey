@@ -7,10 +7,25 @@ set -e
 set -u
 set -o pipefail
 
+if [ "$#" -ne 0 ] && [ "$#" -ne 3 ]; then
+    echo "Usage: $0 [CPU_THRESHOLD MEM_THRESHOLD DISK_THRESHOLD]"
+    exit 1
+fi
 
-CPU_THRESHOLD=80
-MEM_THRESHOLD=80
-DISK_THRESHOLD=80
+CPU_THRESHOLD=${1:-80}
+MEM_THRESHOLD=${2:-80}
+DISK_THRESHOLD=${3:-80}
+
+validate_number() {
+    if ! [[ "$1" =~ ^[0-9]+$ ]]; then
+        echo "Error: Thresholds must be numeric values."
+        exit 1
+    fi
+}
+
+validate_number "$CPU_THRESHOLD"
+validate_number "$MEM_THRESHOLD"
+validate_number "$DISK_THRESHOLD"
 
 LOG_DIR="./logs"
 LOG_FILE="$LOG_DIR/server_health.log"
@@ -87,4 +102,12 @@ check_cpu
 check_memory
 check_disk
 
+echo "System Health Summary"
+echo "----------------------"
+echo "CPU Usage: $CPU_USAGE%"
+echo "Memory Usage: $MEM_USAGE%"
+echo "Disk Usage: $DISK_USAGE%"
+echo "Exit Status: $EXIT_STATUS"
+
 exit $EXIT_STATUS
+
