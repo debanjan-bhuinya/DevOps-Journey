@@ -7,6 +7,18 @@ set -e
 set -u
 set -o pipefail
 
+if [ -z "$SLACK_WEBHOOK_URL" ]; then
+    echo "Error: SLACK_WEBHOOK_URL not set."
+    exit 1
+fi
+
+
+if [ -z "${SLACK_WEBHOOK_URL:-}" ]; then
+    echo "Error: SLACK_WEBHOOK_URL not set."
+    exit 1
+fi
+
+
 if [ "$#" -ne 0 ] && [ "$#" -ne 3 ]; then
     echo "Usage: $0 [CPU_THRESHOLD MEM_THRESHOLD DISK_THRESHOLD]"
     exit 1
@@ -91,23 +103,52 @@ check_disk() {
     fi
 }
 
+send_slack_alert() {
+    local message="$1"
+
+    curl -s -X POST -H 'Content-type: application/json' \
+        --data "{\"text\":\"$message\"}" \
+        "$SLACK_WEBHOOK_URL" > /dev/null
+
+    if [ $? -ne 0 ]; then
+        echo "Warning: Failed to send Slack alert."
+    fi
+}
+
 
 # ------------------------------
 # MAIN
 # ------------------------------
 
-EXIT_STATUS=0
+while true; do
 
-check_cpu
-check_memory
-check_disk
+    EXIT_STATUS=0
 
-echo "System Health Summary"
-echo "----------------------"
-echo "CPU Usage: $CPU_USAGE%"
-echo "Memory Usage: $MEM_USAGE%"
-echo "Disk Usage: $DISK_USAGE%"
-echo "Exit Status: $EXIT_STATUS"
+    check_cpu
+    check_memory
+    check_disk
 
-exit $EXIT_STATUS
+    echo "System Health Summary"
+    echo "----------------------"
+    echo "CPU Usage: $CPU_USAGE%"
+    echo "Memory Usage: $MEM_USAGE%"
+    echo "Disk Usage: $DISK_USAGE%"
+    echo "Exit Status: $EXIT_STATUS"
+    
+   date +%s > /tmp/last_check
+
+    if [ "$EXIT_STATUS" -ne 0 ]; then
+        ALERT_MESSAGE="🚨 Server Health Alert!
+CPU: $CPU_USAGE%
+Memory: $MEM_USAGE%
+Disk: $DISK_USAGE%
+Thresholds -> CPU:$CPU_THRESHOLD MEM:$MEM_THRESHOLD DISK:$DISK_THRESHOLD"
+
+        send_slack_alert "$ALERT_MESSAGE"
+    fi
+
+    echo "Waiting 5 minutes before next check..."
+    sleep 300
+
+done
 
