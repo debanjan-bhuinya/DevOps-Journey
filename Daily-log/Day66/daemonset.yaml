@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: health-monitor-agent
+  labels:
+    app: health-monitor
+spec:
+  selector:
+    matchLabels:
+      app: health-monitor
+  template:
+    metadata:
+      labels:
+        app: health-monitor
+    spec:
+      containers:
+      - name: agent
+        image: busybox
+        command: ["/bin/sh", "-c", "while true; do echo 'Monitoring node health...'; sleep 10; done"]
