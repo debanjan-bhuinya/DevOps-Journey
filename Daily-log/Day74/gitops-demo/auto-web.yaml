@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auto-pilot-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auto-web
+  template:
+    metadata:
+      labels:
+        app: auto-web
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
