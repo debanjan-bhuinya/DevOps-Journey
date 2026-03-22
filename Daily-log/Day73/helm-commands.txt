@@ -1,0 +1,4 @@
+# Day 73: Helm Package Manager
+# Added Bitnami repo: helm repo add bitnami https://charts.bitnami.com/bitnami
+# Installed Nginx: helm install my-super-web bitnami/nginx
+# Uninstalled Nginx: helm uninstall my-super-web
