@@ -1,0 +1,4 @@
+# Day 75: Observability with Prometheus & Grafana
+# Added repo: helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+# Installed stack: helm install my-watchtower prometheus-community/kube-prometheus-stack
+# Extracted password: kubectl get secret my-watchtower-grafana -o jsonpath="{.data.admin-password}" | base64 --decode
