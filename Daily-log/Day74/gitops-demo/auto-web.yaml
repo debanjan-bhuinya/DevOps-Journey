@@ -14,4 +14,4 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: nginx:latest
+        image: pikachu003/auto-web:v1
