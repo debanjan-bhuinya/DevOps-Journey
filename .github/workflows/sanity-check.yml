@@ -1,0 +1,21 @@
+name: Pikachu's Assembly Line
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  test-the-code:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout the Code
+        uses: actions/checkout@v4
+
+      - name: 🔍 Run a Sanity Check
+        run: |
+          echo "Hello Pikachu! The assembly line is online."
+          echo "Checking the contents of your repository..."
+          ls -la
+          echo "Everything looks good! Ready to build."
