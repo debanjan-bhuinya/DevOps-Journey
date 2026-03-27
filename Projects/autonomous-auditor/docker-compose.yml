@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: auditor-backend
+    ports:
+      - "8000:8000"
+    # This securely passes your Gemini API key into the container!
+    env_file:
+      - ./backend/.env
+
+  frontend:
+    build: ./frontend
+    container_name: auditor-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
