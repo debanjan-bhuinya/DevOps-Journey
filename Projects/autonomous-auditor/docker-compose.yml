@@ -6,9 +6,11 @@ services:
     container_name: auditor-backend
     ports:
       - "8000:8000"
-    # This securely passes your Gemini API key into the container!
     env_file:
       - ./backend/.env
+    # NEW: The Docker Volume! This maps the container's data to your local machine.
+    volumes:
+      - ./backend/data:/app/data
 
   frontend:
     build: ./frontend

@@ -5,14 +5,27 @@ export default function Home() {
   const [brainStatus, setBrainStatus] = useState({ security_agent: "offline", devops_agent: "offline", scans_completed: 0 });
   const [isScanning, setIsScanning] = useState(false);
   const [scanResults, setScanResults] = useState<any[]>([]);
-  const [targetUrl, setTargetUrl] = useState("https://raw.githubusercontent.com/debanjan-bhuinya/DevOps-Journey/main/Dockerfile");
+  const [targetUrl, setTargetUrl] = useState("https://raw.githubusercontent.com/debanjan-bhuinya/DevOps-Journey/main/vulnerable.py");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  
+  // NEW: State to hold our database history!
+  const [auditHistory, setAuditHistory] = useState<any[]>([]);
+
+  // NEW: Function to fetch history from the backend
+  const fetchHistory = () => {
+    fetch('http://127.0.0.1:8000/api/history')
+      .then(res => res.json())
+      .then(data => setAuditHistory(data.history))
+      .catch(err => console.error("Could not fetch history"));
+  };
 
   useEffect(() => {
     fetch('http://127.0.0.1:8000/api/status')
       .then(res => res.json())
       .then(data => setBrainStatus(data))
       .catch(err => console.error("Could not connect to The Brain"));
+      
+    fetchHistory(); // Fetch history when the page first loads!
   }, []);
 
   const clearDashboard = () => {
@@ -22,14 +35,8 @@ export default function Home() {
   };
 
   const startAudit = async () => {
-    if (!targetUrl) {
-        setErrorMsg("Captain, please provide a target URL.");
-        return;
-    }
-    if (!targetUrl.startsWith('http')) {
-        setErrorMsg("Invalid URL format. Please include 'https://'.");
-        return;
-    }
+    if (!targetUrl) { setErrorMsg("Captain, please provide a target URL."); return; }
+    if (!targetUrl.startsWith('http')) { setErrorMsg("Invalid URL format. Please include 'https://'."); return; }
 
     setIsScanning(true);
     setScanResults([]); 
@@ -40,7 +47,11 @@ export default function Home() {
       if (!res.ok) throw new Error("The Brain rejected the request.");
       const data = await res.json();
       setScanResults(data.results);
+      
+      // Update the scans counter AND fetch the new history immediately!
       setBrainStatus(prev => ({ ...prev, scans_completed: prev.scans_completed + 1 }));
+      fetchHistory(); 
+      
     } catch (error) {
       setErrorMsg("Critical Failure: Could not establish a link with The Brain.");
     }
@@ -88,6 +99,7 @@ export default function Home() {
           </div>
         )}
         
+        {/* Top Stats */}
         <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl shadow-lg relative overflow-hidden group">
             <h2 className="text-xl font-semibold text-white flex items-center gap-2">🛡️ Security Agent</h2>
@@ -105,35 +117,69 @@ export default function Home() {
           </div>
           <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl shadow-lg">
             <h2 className="text-xl font-semibold text-white flex items-center gap-2">📊 Audit Reports</h2>
-            <p className="text-gray-400 mt-2 text-sm font-mono">{brainStatus.scans_completed} Scans Completed</p>
+            <p className="text-gray-400 mt-2 text-sm font-mono">{auditHistory.length} Scans in Database</p>
           </div>
         </div>
 
+        {/* Live Scan Results */}
         {scanResults.length > 0 && (
           <div className="mt-10 space-y-6">
             {scanResults.map((result, index) => (
-              <div key={index} className="bg-[#0a0a0a] border border-gray-800 p-6 rounded-xl shadow-2xl font-mono overflow-x-auto animate-in slide-in-from-bottom-4 duration-500" style={{ animationDelay: `${index * 150}ms`, animationFillMode: 'both' }}>
+              <div key={index} className="bg-[#0a0a0a] border border-gray-800 p-6 rounded-xl shadow-2xl font-mono overflow-x-auto animate-in slide-in-from-bottom-4 duration-500">
                 <div className="flex items-center justify-between border-b border-gray-800 pb-4 mb-4">
                     <h2 className="text-lg text-blue-400 flex items-center gap-2">
-                        <span className="text-gray-500">&gt;_</span> {result.agent.toUpperCase()}
+                        <span className="text-gray-500">&gt;_</span> {result.agent.toUpperCase()} (LIVE SCAN)
                     </h2>
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${result.vulnerabilities === 0 ? 'bg-green-950/50 text-green-400 border border-green-900/50' : 'bg-red-950/50 text-red-400 border border-red-900/50'}`}>
-                        {result.vulnerabilities} ISSUES DETECTED
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${result.vulnerabilities === 0 ? 'bg-green-950/50 text-green-400' : 'bg-red-950/50 text-red-400'}`}>
+                        {result.vulnerabilities} ISSUES
                     </span>
                 </div>
                 <div className="text-gray-300 space-y-3">
                   <p className="text-sm truncate"><span className="text-gray-500">TARGET //</span> {result.target}</p>
-                  
-                  {/* THE UI UPGRADE: Render text with line breaks and monospace formatting! */}
                   <pre className={`mt-4 p-5 rounded-lg border-l-2 whitespace-pre-wrap overflow-x-auto text-sm leading-relaxed ${result.vulnerabilities === 0 ? 'bg-green-950/20 border-green-500 text-green-300' : 'bg-red-950/20 border-red-500 text-gray-300'}`}>
                     {result.report}
                   </pre>
-                  
                 </div>
               </div>
             ))}
           </div>
         )}
+
+        {/* NEW: Mission Archives Database Table */}
+        {auditHistory.length > 0 && (
+          <div className="mt-16 pt-8 border-t border-gray-800">
+            <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+               🗄️ Mission Archives
+            </h2>
+            <div className="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden shadow-lg">
+              <table className="w-full text-left text-sm text-gray-400">
+                <thead className="bg-gray-950/50 text-gray-300 font-mono text-xs uppercase border-b border-gray-800">
+                  <tr>
+                    <th className="px-6 py-4">Timestamp</th>
+                    <th className="px-6 py-4">Agent</th>
+                    <th className="px-6 py-4">Target</th>
+                    <th className="px-6 py-4 text-center">Issues</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-800 font-mono">
+                  {auditHistory.map((record, idx) => (
+                    <tr key={idx} className="hover:bg-gray-800/50 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap">{new Date(record.timestamp).toLocaleString()}</td>
+                      <td className="px-6 py-4 text-blue-400">{record.agent.split(' ')[0]}</td>
+                      <td className="px-6 py-4 truncate max-w-[200px]" title={record.target}>{record.target.split('/').pop()}</td>
+                      <td className="px-6 py-4 text-center">
+                        <span className={`px-2 py-1 rounded text-xs font-bold ${record.issues_found === 0 ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'}`}>
+                          {record.issues_found}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
       </div>
     </main>
   );
