@@ -15,17 +15,19 @@ async def run_devops_scan(target_repo: str):
             live_code = response.text
         else:
             raise Exception("File not found on GitHub.")
-            
     except Exception as e:
          return {"agent": "DevOps", "target": target_repo, "vulnerabilities": 0, "report": f"Download failed: {str(e)}"}
 
+    # THE UPGRADE: Demand the optimized infrastructure code!
     prompt = f"""
-    You are an elite Senior DevOps Engineer. 
-    Analyze this configuration file or code. 
-    Identify ONE missing DevOps best practice (e.g., missing Docker tags, running as root, hardcoded configs).
-    Keep it to exactly one short sentence. 
+    You are an elite Senior DevOps Engineer. Analyze this configuration file. 
     If it is perfectly optimized for production, reply EXACTLY with: "Infrastructure optimized perfectly. Ready for production."
-    Code:
+    
+    If it lacks best practices (like missing tags, running as root, bad caching):
+    1. Write exactly one short sentence identifying the biggest issue.
+    2. Add a new line, and then provide the FULL, optimized, production-ready version of the file.
+    
+    File to analyze:
     {live_code}
     """
     
@@ -37,8 +39,6 @@ async def run_devops_scan(target_repo: str):
     except Exception as e:
         ai_report = f"AI Comm Link Failed: {str(e)}"
         issues_found = 0
-
-    print(f"[⚙️ DEVOPS AGENT] Analysis complete. Returning report.\n")
     
     return {
         "agent": "DevOps (Powered by Gemini)",
