@@ -9,27 +9,25 @@ genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 async def run_security_scan(target_repo: str):
     print(f"\n[🛡️ SECURITY AGENT] Mission target acquired: {target_repo}")
     
-    # 1. The URL to the raw text of the file you just pushed!
-    raw_github_url = "https://raw.githubusercontent.com/debanjan-bhuinya/DevOps-Journey/main/vulnerable.py"
-    
+    # THE FIX: We now use the exact URL passed from the Dashboard!
     print(f"[🛡️ SECURITY AGENT] Downloading live code from GitHub...")
     
     try:
-        # 2. Download the file
-        response = requests.get(raw_github_url)
+        response = requests.get(target_repo)
         if response.status_code == 200:
             live_code = response.text
             print("[🛡️ SECURITY AGENT] Code downloaded successfully. Handing to Gemini...")
         else:
-            raise Exception("File not found on GitHub. Did you push it?")
+            raise Exception("File not found on GitHub. Check the URL!")
             
     except Exception as e:
          return {"agent": "Security", "target": target_repo, "vulnerabilities": 0, "report": f"Download failed: {str(e)}"}
 
-    # 3. Feed the downloaded code to the AI
+    # We also upgrade the prompt so the AI can give us a "Clean" report
     prompt = f"""
     You are an elite DevOps Security Agent. 
-    Analyze this Python code. Tell me the security vulnerability in exactly one short sentence. 
+    Analyze this code. Tell me if there are any security vulnerabilities in exactly one short sentence. 
+    If it is completely safe, reply EXACTLY with: "Scan passed perfectly. Code is secure."
     Do not use formatting, just plain text.
     Code:
     {live_code}
@@ -39,7 +37,9 @@ async def run_security_scan(target_repo: str):
         model = genai.GenerativeModel('gemini-2.5-flash')
         ai_response = model.generate_content(prompt)
         ai_report = ai_response.text.strip()
-        vulns_found = 1
+        
+        # Dynamic Counter: If the AI says it's secure, 0 bugs. Otherwise, 1 bug.
+        vulns_found = 0 if "secure" in ai_report.lower() else 1
     except Exception as e:
         ai_report = f"AI Comm Link Failed: {str(e)}"
         vulns_found = 0
@@ -48,7 +48,7 @@ async def run_security_scan(target_repo: str):
     
     return {
         "agent": "Security (Powered by Gemini)",
-        "target": f"{target_repo}/vulnerable.py",
+        "target": target_repo,
         "vulnerabilities": vulns_found,
         "report": ai_report
     }
