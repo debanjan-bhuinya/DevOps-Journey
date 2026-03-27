@@ -1,0 +1,32 @@
+name: Auditor CI Pipeline
+
+# 1. When should this robot wake up? 
+# Answer: Every time code is pushed to the 'main' branch!
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+# 2. What jobs should the robot do?
+jobs:
+  test-docker-builds:
+    name: Build and Test Containers
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step A: Download your repository code onto the GitHub server
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      # Step B: Test the Python Backend Dockerfile
+      - name: 🧠 Test Backend Docker Build
+        run: |
+          cd Projects/autonomous-auditor/backend
+          docker build -t auditor-backend-test .
+
+      # Step C: Test the Next.js Frontend Dockerfile
+      - name: ⚛️ Test Frontend Docker Build
+        run: |
+          cd Projects/autonomous-auditor/frontend
+          docker build -t auditor-frontend-test .
