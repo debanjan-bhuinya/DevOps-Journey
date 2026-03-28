@@ -5,6 +5,7 @@ from fastapi import FastAPI, Depends, Response
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import os
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from agents.security import run_security_scan
 from agents.devops import run_devops_scan
@@ -25,19 +26,14 @@ def get_db():
     try: yield db
     finally: db.close()
 
-@app.get("/api/status")
-def get_agent_status():
-    return {"security_agent": "online", "devops_agent": "online", "scans_completed": 0}
-
-@app.post("/api/scan")
-async def start_audit_scan(repo_url: str, db: Session = Depends(get_db)):
+# --- CORE SCANNING ENGINE ---
+async def execute_full_scan(repo_url: str, db: Session):
     owner, repo = parse_github_url(repo_url)
     if owner and repo:
         try:
-            file_urls = get_target_files(owner, repo)
-            file_urls = file_urls[:4] 
+            file_urls = get_target_files(owner, repo)[:4] 
         except Exception as e:
-            return {"message": "Failed", "results": [{"agent": "System", "target": repo_url, "vulnerabilities": 1, "report": str(e)}]}
+            return [{"agent": "System", "target": repo_url, "vulnerabilities": 1, "report": str(e)}]
     else:
         file_urls = [repo_url]
 
@@ -62,32 +58,49 @@ async def start_audit_scan(repo_url: str, db: Session = Depends(get_db)):
         db.add(db_record)
     
     db.commit()
-    return {"message": "Multi-Agent Audit completed.", "results": all_results}
+    return all_results
+
+# --- API ENDPOINTS ---
+@app.get("/api/status")
+def get_agent_status():
+    return {"security_agent": "online", "devops_agent": "online", "scans_completed": 0}
+
+@app.post("/api/scan")
+async def start_audit_scan(repo_url: str, db: Session = Depends(get_db)):
+    results = await execute_full_scan(repo_url, db)
+    return {"message": "Multi-Agent Audit completed.", "results": results}
 
 @app.get("/api/history")
 def get_audit_history(db: Session = Depends(get_db)):
     records = db.query(AuditRecord).order_by(AuditRecord.timestamp.desc()).limit(15).all()
     return {"history": records}
 
-# 📊 THE NEW UPGRADE: The CSV Export Endpoint!
 @app.get("/api/export")
 def export_history_csv(db: Session = Depends(get_db)):
     records = db.query(AuditRecord).order_by(AuditRecord.timestamp.desc()).all()
-    
     stream = io.StringIO()
     csv_writer = csv.writer(stream)
-    
-    # Write the column headers
     csv_writer.writerow(["Timestamp", "Agent", "Target", "Issues Found", "Report Summary"])
-    
-    # Write the data rows
     for r in records:
-        # We clean up the report string slightly so it doesn't break the CSV formatting
         clean_report = r.report.replace('\n', ' ').replace('\r', '')
         csv_writer.writerow([r.timestamp.strftime("%Y-%m-%d %H:%M:%S"), r.agent, r.target, r.issues_found, clean_report])
-    
-    return Response(
-        content=stream.getvalue(),
-        media_type="text/csv",
-        headers={"Content-Disposition": "attachment; filename=Auditor_Mission_Report.csv"}
-    )
+    return Response(content=stream.getvalue(), media_type="text/csv", headers={"Content-Disposition": "attachment; filename=Auditor_Mission_Report.csv"})
+
+# --- 🤖 THE AUTOPILOT UPGRADE ---
+async def automated_nightly_audit():
+    print("\n[⏰ AUTOPILOT] Waking up for scheduled automated audit...")
+    db = SessionLocal()
+    try:
+        target = "https://github.com/debanjan-bhuinya/DevOps-Journey"
+        await execute_full_scan(target, db)
+        print("[⏰ AUTOPILOT] Scheduled audit complete. Reports saved to memory bank.\n")
+    finally:
+        db.close()
+
+@app.on_event("startup")
+async def start_background_scheduler():
+    scheduler = AsyncIOScheduler()
+    # We set it to run every 12 hours automatically!
+    scheduler.add_job(automated_nightly_audit, 'interval', hours=12)
+    scheduler.start()
+    print("[⚙️ SYSTEM] Background Autopilot Scheduler Started.")
