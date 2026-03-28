@@ -1,5 +1,7 @@
 import asyncio
-from fastapi import FastAPI, Depends
+import csv
+import io
+from fastapi import FastAPI, Depends, Response
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 import os
@@ -29,45 +31,63 @@ def get_agent_status():
 
 @app.post("/api/scan")
 async def start_audit_scan(repo_url: str, db: Session = Depends(get_db)):
-    
-    # 1. Check if it's a full GitHub repository link
     owner, repo = parse_github_url(repo_url)
-    
     if owner and repo:
         try:
             file_urls = get_target_files(owner, repo)
-            # Limit to the first 3 files so we don't hit Gemini API rate limits!
-            file_urls = file_urls[:3] 
+            file_urls = file_urls[:4] 
         except Exception as e:
             return {"message": "Failed", "results": [{"agent": "System", "target": repo_url, "vulnerabilities": 1, "report": str(e)}]}
     else:
-        # Fallback: If it's just a raw file URL like before, scan just that one
         file_urls = [repo_url]
 
     all_results = []
     
-    # 2. Launch the agents for EVERY file found!
     for url in file_urls:
-        security_task = run_security_scan(url)
-        devops_task = run_devops_scan(url)
-        file_results = await asyncio.gather(security_task, devops_task)
-        all_results.extend(file_results)
+        tasks = []
+        if url.endswith('.py') or url.endswith('.js') or url.endswith('.ts'):
+            tasks.append(run_security_scan(url))
+        elif 'Dockerfile' in url or url.endswith('.yml') or url.endswith('.yaml'):
+            tasks.append(run_devops_scan(url))
+        else:
+            tasks.append(run_security_scan(url))
+            tasks.append(run_devops_scan(url))
+
+        if tasks:
+            file_results = await asyncio.gather(*tasks)
+            all_results.extend(file_results)
     
-    # 3. Save all reports to the Memory Bank
     for res in all_results:
-        db_record = AuditRecord(
-            target=res["target"],
-            agent=res["agent"],
-            issues_found=res["vulnerabilities"],
-            report=res["report"]
-        )
+        db_record = AuditRecord(target=res["target"], agent=res["agent"], issues_found=res["vulnerabilities"], report=res["report"])
         db.add(db_record)
     
     db.commit()
-    
     return {"message": "Multi-Agent Audit completed.", "results": all_results}
 
 @app.get("/api/history")
 def get_audit_history(db: Session = Depends(get_db)):
-    records = db.query(AuditRecord).order_by(AuditRecord.timestamp.desc()).limit(10).all()
+    records = db.query(AuditRecord).order_by(AuditRecord.timestamp.desc()).limit(15).all()
     return {"history": records}
+
+# 📊 THE NEW UPGRADE: The CSV Export Endpoint!
+@app.get("/api/export")
+def export_history_csv(db: Session = Depends(get_db)):
+    records = db.query(AuditRecord).order_by(AuditRecord.timestamp.desc()).all()
+    
+    stream = io.StringIO()
+    csv_writer = csv.writer(stream)
+    
+    # Write the column headers
+    csv_writer.writerow(["Timestamp", "Agent", "Target", "Issues Found", "Report Summary"])
+    
+    # Write the data rows
+    for r in records:
+        # We clean up the report string slightly so it doesn't break the CSV formatting
+        clean_report = r.report.replace('\n', ' ').replace('\r', '')
+        csv_writer.writerow([r.timestamp.strftime("%Y-%m-%d %H:%M:%S"), r.agent, r.target, r.issues_found, clean_report])
+    
+    return Response(
+        content=stream.getvalue(),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=Auditor_Mission_Report.csv"}
+    )

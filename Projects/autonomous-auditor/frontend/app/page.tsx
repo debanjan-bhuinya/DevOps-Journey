@@ -7,11 +7,8 @@ export default function Home() {
   const [scanResults, setScanResults] = useState<any[]>([]);
   const [targetUrl, setTargetUrl] = useState("https://github.com/debanjan-bhuinya/DevOps-Journey");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  
-  // NEW: State to hold our database history!
   const [auditHistory, setAuditHistory] = useState<any[]>([]);
 
-  // NEW: Function to fetch history from the backend
   const fetchHistory = () => {
     fetch('http://127.0.0.1:8000/api/history')
       .then(res => res.json())
@@ -24,8 +21,7 @@ export default function Home() {
       .then(res => res.json())
       .then(data => setBrainStatus(data))
       .catch(err => console.error("Could not connect to The Brain"));
-      
-    fetchHistory(); // Fetch history when the page first loads!
+    fetchHistory();
   }, []);
 
   const clearDashboard = () => {
@@ -47,11 +43,8 @@ export default function Home() {
       if (!res.ok) throw new Error("The Brain rejected the request.");
       const data = await res.json();
       setScanResults(data.results);
-      
-      // Update the scans counter AND fetch the new history immediately!
       setBrainStatus(prev => ({ ...prev, scans_completed: prev.scans_completed + 1 }));
       fetchHistory(); 
-      
     } catch (error) {
       setErrorMsg("Critical Failure: Could not establish a link with The Brain.");
     }
@@ -99,7 +92,6 @@ export default function Home() {
           </div>
         )}
         
-        {/* Top Stats */}
         <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-gray-900 border border-gray-800 p-6 rounded-xl shadow-lg relative overflow-hidden group">
             <h2 className="text-xl font-semibold text-white flex items-center gap-2">🛡️ Security Agent</h2>
@@ -121,7 +113,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Live Scan Results */}
         {scanResults.length > 0 && (
           <div className="mt-10 space-y-6">
             {scanResults.map((result, index) => (
@@ -145,12 +136,22 @@ export default function Home() {
           </div>
         )}
 
-        {/* NEW: Mission Archives Database Table */}
         {auditHistory.length > 0 && (
           <div className="mt-16 pt-8 border-t border-gray-800">
-            <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-               🗄️ Mission Archives
-            </h2>
+            {/* THE NEW UPGRADE: Download CSV Button Header */}
+            <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                   🗄️ Mission Archives
+                </h2>
+                <a 
+                  href="http://127.0.0.1:8000/api/export" 
+                  download 
+                  className="bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white px-4 py-2 rounded-lg text-sm font-semibold border border-gray-700 transition-all flex items-center gap-2"
+                >
+                  📥 Export CSV
+                </a>
+            </div>
+            
             <div className="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden shadow-lg">
               <table className="w-full text-left text-sm text-gray-400">
                 <thead className="bg-gray-950/50 text-gray-300 font-mono text-xs uppercase border-b border-gray-800">
