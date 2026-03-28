@@ -5,7 +5,7 @@ export default function Home() {
   const [brainStatus, setBrainStatus] = useState({ security_agent: "offline", devops_agent: "offline", scans_completed: 0 });
   const [isScanning, setIsScanning] = useState(false);
   const [scanResults, setScanResults] = useState<any[]>([]);
-  const [targetUrl, setTargetUrl] = useState("https://raw.githubusercontent.com/debanjan-bhuinya/DevOps-Journey/main/vulnerable.py");
+  const [targetUrl, setTargetUrl] = useState("https://github.com/debanjan-bhuinya/DevOps-Journey");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   
   // NEW: State to hold our database history!
@@ -77,7 +77,7 @@ export default function Home() {
             type="text" 
             value={targetUrl}
             onChange={(e) => { setTargetUrl(e.target.value); setErrorMsg(null); }}
-            placeholder="Paste raw GitHub file URL here..."
+            placeholder="Paste standard GitHub Repository URL here..."
             className="flex-1 bg-gray-950 text-white border border-gray-800 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500 transition-colors font-mono text-sm"
           />
           <button onClick={clearDashboard} disabled={isScanning} className="bg-red-950/30 hover:bg-red-900/50 text-red-400 border border-red-900/50 font-bold py-3 px-6 rounded-lg transition-all disabled:opacity-50">
