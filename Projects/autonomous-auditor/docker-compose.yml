@@ -1,21 +1,28 @@
-version: '3.8'
-
 services:
+  nginx:
+    image: nginx:alpine
+    container_name: auditor-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    # THE CHEAT CODE: Directly linking your live files!
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - frontend
+      - backend
+
   backend:
     build: ./backend
     container_name: auditor-backend
-    ports:
-      - "8000:8000"
     env_file:
       - ./backend/.env
-    # NEW: The Docker Volume! This maps the container's data to your local machine.
     volumes:
       - ./backend/data:/app/data
 
   frontend:
     build: ./frontend
     container_name: auditor-frontend
-    ports:
-      - "3000:3000"
     depends_on:
       - backend
