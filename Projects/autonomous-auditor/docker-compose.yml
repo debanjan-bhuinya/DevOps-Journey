@@ -45,11 +45,30 @@ services:
     ports:
       - "8080:8080"
 
-  # 📊 THE COMMAND CENTER: Grafana
   grafana:
     image: grafana/grafana:latest
     container_name: auditor-grafana
     ports:
-      - "3001:3000" # Mapped to 3001 so it doesn't fight Next.js!
+      - "3001:3000"
     depends_on:
       - prometheus
+      - loki
+
+  # 📦 THE BLACK BOX: Loki (Log Database)
+  loki:
+    image: grafana/loki:latest
+    container_name: auditor-loki
+    volumes:
+      - ./logging/loki-config.yaml:/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+
+  # 🕵️ THE AGENT: Promtail (Log Collector)
+  promtail:
+    image: grafana/promtail:latest
+    container_name: auditor-promtail
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./logging/promtail-config.yaml:/etc/promtail/config.yml
+    depends_on:
+      - loki
