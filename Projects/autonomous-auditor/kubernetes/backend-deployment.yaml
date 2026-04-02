@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auditor-backend-deployment
+spec:
+  replicas: 2 # 🌟 High Availability: Run 2 identical clones!
+  selector:
+    matchLabels:
+      app: auditor-backend
+  template:
+    metadata:
+      labels:
+        app: auditor-backend
+    spec:
+      containers:
+      - name: backend
+        image: pikachu003/auditor-backend:v1.0.0
+        ports:
+        - containerPort: 8000
