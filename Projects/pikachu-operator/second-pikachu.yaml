@@ -1,0 +1,7 @@
+apiVersion: core.pikachu.com/v1alpha1
+kind: Pikachu
+metadata:
+  name: my-second-pikachu
+spec:
+  level: 100
+  electricPower: "1,000,000 Volts"

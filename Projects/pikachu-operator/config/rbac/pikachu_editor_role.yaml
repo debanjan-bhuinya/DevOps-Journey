@@ -1,0 +1,31 @@
+# permissions for end users to edit pikachus.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: pikachu-editor-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: pikachu-operator
+    app.kubernetes.io/part-of: pikachu-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: pikachu-editor-role
+rules:
+- apiGroups:
+  - core.pikachu.com
+  resources:
+  - pikachus
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - core.pikachu.com
+  resources:
+  - pikachus/status
+  verbs:
+  - get

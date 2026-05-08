@@ -1,0 +1,12 @@
+apiVersion: core.pikachu.com/v1alpha1
+kind: Pikachu
+metadata:
+  labels:
+    app.kubernetes.io/name: pikachu
+    app.kubernetes.io/instance: pikachu-sample
+    app.kubernetes.io/part-of: pikachu-operator
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: pikachu-operator
+  name: pikachu-sample
+spec:
+  # TODO(user): Add fields here
