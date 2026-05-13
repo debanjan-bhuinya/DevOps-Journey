@@ -1,0 +1,7 @@
+apiVersion: core.pikachu.com/v1alpha1
+kind: Pikachu
+metadata:
+  name: corrupted-pikachu
+spec:
+  level: -5000
+  electricPower: "Potato"

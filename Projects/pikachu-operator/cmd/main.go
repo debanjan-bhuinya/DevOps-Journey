@@ -33,6 +33,7 @@ import (
 
 	corev1alpha1 "github.com/debanjan-bhuinya/pikachu-operator/api/v1alpha1"
 	"github.com/debanjan-bhuinya/pikachu-operator/internal/controller"
+	webhookv1alpha1 "github.com/debanjan-bhuinya/pikachu-operator/internal/webhook/v1alpha1"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -66,9 +67,9 @@ func main() {
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
-		Scheme:                 scheme,
-		MetricsBindAddress:     metricsAddr,
-		Port:                   9443,
+		Scheme: scheme,
+		// MetricsBindAddress:     metricsAddr,
+		//Port:                   9443,
 		HealthProbeBindAddress: probeAddr,
 		LeaderElection:         enableLeaderElection,
 		LeaderElectionID:       "3e18b389.pikachu.com",
@@ -96,6 +97,13 @@ func main() {
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Pikachu")
 		os.Exit(1)
+	}
+	// nolint:goconst
+	if os.Getenv("ENABLE_WEBHOOKS") != "false" {
+		if err := webhookv1alpha1.SetupPikachuWebhookWithManager(mgr); err != nil {
+			setupLog.Error(err, "Failed to create webhook", "webhook", "Pikachu")
+			os.Exit(1)
+		}
 	}
 	//+kubebuilder:scaffold:builder
 
